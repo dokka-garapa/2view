@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>リグ人形ポーズゲーム</title>
+<title>リグ人形2面ポーズビュー</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#e9eef0;--panel:#f8fbfb;--text:#1f2a30;--sub:#5d6b73;--near:#d8433b;--far:#3d6fd1;--body:#7d8b94;--line:#cfd9dd;--ghost:#1f9d6b;--btn:#1f2a30;--btntext:#f8fbfb;color-scheme:light}
@@ -41,7 +41,7 @@ body{height:100dvh;box-sizing:border-box}
 <style>.btns button:disabled{opacity:.45}.handrow button{font-size:11px;padding:9px 2px}.handb.on{background:#ffb300;color:#4e342e;border-color:#ffb300}.slots{display:flex;gap:6px}.slots button{padding:7px 0;font-size:15px}.slotb.on{background:#ffb300;color:#4e342e;border-color:#ffb300}#rotmode.on,#rigtoggle.on{background:#ffb300;color:#4e342e}</style>
 </head>
 <body>
-<h1>リグ人形ポーズゲーム</h1>
+<h1>リグ人形2面ポーズビュー</h1>
 <div class="msg" id="msg">左（正面）と右（横）、どちらの関節（丸）もドラッグして動かせるよ。もう片方が連動する。</div>
 <div class="slots"><button class="sub slotb on" data-slot="0">1</button><button class="sub slotb" data-slot="1">2</button><button class="sub slotb" data-slot="2">3</button><button class="sub slotb" data-slot="3">4</button><button class="sub slotb" data-slot="4">5</button></div>
 
@@ -51,7 +51,7 @@ body{height:100dvh;box-sizing:border-box}
 </div>
 <div class="leg"><span style="--c:var(--near)">右手足</span><span style="--c:var(--far)">左手足</span></div>
 <div class="btns"><button class="sub" id="reset">リセット</button><button class="sub" id="rotmode">♻️首・腰・手首回転モード</button><button class="sub on" id="rigtoggle">◉リグ表示 ON/OFF</button></div>
-<div class="btns"><button class="sub" id="exportimg">📷 画像を書き出し</button><button class="sub" id="shareimg">共有</button></div>
+<div class="btns"><button class="sub" id="exportimg">📷 画像を書き出し</button><button class="sub" id="shareimg">⬆️共有</button></div>
 <div class="btns"><button class="sub" id="undo" disabled>ひとつ戻る</button><button class="sub" id="redo" disabled>ひとつ進む</button></div>
 <div class="btns"><button class="sub" id="lastreset" disabled>最後にさわった部分をリセット</button></div>
 <div id="expov" style="display:none;position:fixed;inset:0;background:rgba(20,30,36,.72);z-index:60;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:16px;box-sizing:border-box">
@@ -62,8 +62,8 @@ body{height:100dvh;box-sizing:border-box}
 <button id="expx" style="background:#f8fbfb;border:1px solid #cfd9dd;border-radius:12px;padding:10px 16px;color:#24313a;font-size:13px">閉じる</button>
 </div>
 </div>
-<div class="btns handrow"><button class="sub handb" data-hand="L" data-shape="fist">左手・グーの形</button><button class="sub handb" data-hand="L" data-shape="point">左手・指差しの形</button><button class="sub handb on" data-hand="L" data-shape="open">左手・指を伸ばした形</button></div>
-<div class="btns handrow"><button class="sub handb" data-hand="R" data-shape="fist">右手・グーの形</button><button class="sub handb" data-hand="R" data-shape="point">右手・指差しの形</button><button class="sub handb on" data-hand="R" data-shape="open">右手・指を伸ばした形</button></div>
+<div class="btns handrow"><button class="sub handb" data-hand="L" data-shape="fist">左手・グーの形✊</button><button class="sub handb" data-hand="L" data-shape="point">左手・指差しの形☝️</button><button class="sub handb on" data-hand="L" data-shape="open">左手・指を伸ばした形✋</button></div>
+<div class="btns handrow"><button class="sub handb" data-hand="R" data-shape="fist">右手・グーの形✊</button><button class="sub handb" data-hand="R" data-shape="point">右手・指差しの形☝️</button><button class="sub handb on" data-hand="R" data-shape="open">右手・指を伸ばした形✋</button></div>
 <script>
 const L={chest:85,head:28,shN:10,elbowN:48,wristN:45,fingerN:18,shF:10,elbowF:48,wristF:45,fingerF:18,kneeN:62,ankleN:60,toeN:22,toeTipN:16,kneeF:62,ankleF:60,toeF:22,toeTipF:16};
 const P={chest:'hip',head:'chest',shN:'chest',elbowN:'shN',wristN:'elbowN',fingerN:'wristN',shF:'chest',elbowF:'shF',wristF:'elbowF',fingerF:'wristF',kneeN:'hip',ankleN:'kneeN',toeN:'ankleN',toeTipN:'toeN',kneeF:'hip',ankleF:'kneeF',toeF:'ankleF',toeTipF:'toeF'};
@@ -4257,7 +4257,11 @@ function poseFromJ(sk){
    let q=null;
    const curl=shape==='fist'?1:shape==='point'?(ch.name==='Index'?0:ch.name==='Thumb'?0.8:1):0;
    const ca=ch.max[i]*curl;
-   if(ca){const ax=latW.clone().applyQuaternion(pq).normalize();q=new THREE.Quaternion().setFromAxisAngle(ax,-sd.curlSign*ca)}
+   if(ch.name==='Thumb'&&curl){
+    const qP=new THREE.Quaternion().setFromAxisAngle(palmW.clone().applyQuaternion(pq).normalize(),(sd.thumbPalmSign||1)*[0.7,0.45,0.3][i]*curl);
+    const qL=new THREE.Quaternion().setFromAxisAngle(latW.clone().applyQuaternion(pq).normalize(),-sd.curlSign*[0.5,0.8,0.6][i]*curl);
+    q=qP.multiply(qL);
+   } else if(ca){const ax=latW.clone().applyQuaternion(pq).normalize();q=new THREE.Quaternion().setFromAxisAngle(ax,-sd.curlSign*ca)}
    if(i===0&&ch.offN){const sp=sd.spreadFlip*ch.offN*(1-curl)*0.16;
     if(sp){const ax2=palmW.clone().applyQuaternion(pq).normalize();const q2=new THREE.Quaternion().setFromAxisAngle(ax2,sp);q=q?q2.multiply(q):q2}}
    if(q)b.quaternion.copy(q).multiply(ch.rests[i]);else b.quaternion.copy(ch.rests[i]);
@@ -4272,7 +4276,7 @@ function collectHandM(root,pre){
   const bs=[];
   for(let i=1;i<=3;i++){const b=findBoneM(root,pre+f+i);if(b)bs.push(b)}
   if(bs.length)chains.push({name:f,bones:bs,rests:bs.map(b=>b.quaternion.clone()),
-   max:f==='Thumb'?[0.55,0.5,0.4]:[0.95,1.15,0.7],offN:0});
+   max:f==='Thumb'?[0.55,0.5,0.4]:[1.35,1.85,1.05],offN:0});
  }
  return chains;
 }
@@ -4307,6 +4311,16 @@ function calibrateFingers(sk){
    root.updateMatrixWorld(true);
    if(wp(M3).sub(before).dot(palm)<0)sd.curlSign=-1;
    M1.quaternion.copy(rest);root.updateMatrixWorld(true);}
+  sd.thumbPalmSign=1;
+  {const T1=th.bones[0],tipB=(th.bones[2]&&th.bones[2].children.find(c=>c.isBone))||th.bones[2];
+   const rest=T1.quaternion.clone();let bd=1e9;
+   for(const s of [1,-1]){
+    const pq2=wq(T1.parent).invert();const ax=palm.clone().applyQuaternion(pq2).normalize();
+    T1.quaternion.copy(new THREE.Quaternion().setFromAxisAngle(ax,s*0.4)).multiply(rest);
+    root.updateMatrixWorld(true);
+    const d=wp(tipB).distanceTo(wp(M1));
+    if(d<bd){bd=d;sd.thumbPalmSign=s;}
+    T1.quaternion.copy(rest);root.updateMatrixWorld(true);}}
   const offs={};
   for(const c of chains)offs[c.name]=wp(c.bones[0]).sub(wp(M1)).dot(lat);
   const mx=Math.max(...Object.values(offs).map(Math.abs),1e-6);
@@ -4363,11 +4377,12 @@ function render3D(){
   const sz=p.renderer.getSize(new THREE.Vector2());
   if(sz.x!==w||sz.y!==h)p.renderer.setSize(w,h,false);
   poseFromJ(p.sk);
-  const c=CAMS[p.sel.value]||CAMS.right,t=c.t||[0,0.1,0];
+  const c=CAMS[p.sel.value]||CAMS.right,t0=c.t||[0,0.1,0],pw=(p.sel===selL?svgL:svgR)._panW||[0,0,0],t=[t0[0]+pw[0],t0[1]+pw[1],t0[2]+pw[2]];
   p.camera.up.set(c.u[0],c.u[1],c.u[2]);
   p.camera.position.set(t[0]+c.d[0],t[1]+c.d[1],t[2]+c.d[2]);
   p.camera.lookAt(t[0],t[1],t[2]);
   const k=Math.min(w/200,h/300);let halfH=1.45,halfW=halfH*w/h;if(halfW<0.85){halfW=0.85;halfH=halfW*h/w;}
+  const zm=(p.sel===selL?svgL:svgR)._zoomV||1;halfH/=zm;halfW/=zm;
   p.camera.left=-halfW;p.camera.right=halfW;p.camera.top=halfH;p.camera.bottom=-halfH;
   p.camera.updateProjectionMatrix();
   const td=p.sel.value==='top';if(p.ground)p.ground.visible=!td;if(p.ring)p.ring.visible=!td;
@@ -4383,6 +4398,143 @@ function render3D(){
   (p.sel===selL?svgL:svgR)._D=D;}}
 window.addEventListener('resize',()=>{if(M3D.ok)render3D()});
 document.getElementById('rigtoggle').onclick=function(){RIG=!RIG;ACTIVE=null;this.classList.toggle('on',RIG);document.getElementById('msg').textContent=RIG?'リグ表示中：関節の丸をドラッグして動かせるよ。':'リグ非表示：見えなくても、関節のあった場所をドラッグして動かせるよ。';render();};
+
+// ===== 保存ポーズのサムネイル＆描画スペース全画面 =====
+(function(){
+ const st=document.createElement('style');
+ st.textContent='.slotlab{align-self:center;font-weight:700;font-size:13px;white-space:nowrap}.slotcell{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}.slotcell .slotb{width:100%}.slotthumb{height:42px;display:flex;align-items:flex-end;justify-content:center}.slotthumb svg{height:42px;width:auto;max-width:100%}.fsbtn{position:absolute;top:6px;right:6px;z-index:30;padding:5px 9px;font-size:12px;border-radius:8px;border:1px solid #90a4ae;background:rgba(255,255,255,.88);color:#37474f}.stage.fsbig{position:fixed;inset:0;z-index:1500;background:var(--bg)}';
+ document.head.appendChild(st);
+ const slotsDiv=document.querySelector('.slots');
+ if(slotsDiv){
+  const lab=document.createElement('span');lab.className='slotlab';lab.textContent='保存ポーズ';
+  slotsDiv.insertBefore(lab,slotsDiv.firstChild);
+  document.querySelectorAll('.slotb').forEach(b=>{
+   const cell=document.createElement('div');cell.className='slotcell';
+   const th=document.createElement('div');th.className='slotthumb';th.dataset.slot=b.dataset.slot;
+   b.parentNode.insertBefore(cell,b);cell.appendChild(th);cell.appendChild(b);});
+ }
+ const thumbSVG=poseJ=>{
+  const V=VIEWS.right,pp={};
+  for(const n of ['hip',...N])pp[n]=proj(V,poseJ[n]);
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(const n in pp){x0=Math.min(x0,pp[n].u);x1=Math.max(x1,pp[n].u);y0=Math.min(y0,pp[n].v);y1=Math.max(y1,pp[n].v);}
+  const pad=14,x=x0-pad,y=y0-pad,w=Math.max(10,x1-x0+2*pad),h=Math.max(10,y1-y0+2*pad);
+  const col=n=>n.endsWith('N')?'#ff5a4f':n.endsWith('F')?'#4d86ff':'#78909c';
+  let s='';
+  for(const n of N)s+='<line x1="'+pp[P[n]].u.toFixed(1)+'" y1="'+pp[P[n]].v.toFixed(1)+'" x2="'+pp[n].u.toFixed(1)+'" y2="'+pp[n].v.toFixed(1)+'" stroke="'+col(n)+'" stroke-width="7" stroke-linecap="round"/>';
+  return '<svg viewBox="'+x.toFixed(1)+' '+y.toFixed(1)+' '+w.toFixed(1)+' '+h.toFixed(1)+'" xmlns="http://www.w3.org/2000/svg">'+s+'</svg>';};
+ window.updThumbs=function(){
+  document.querySelectorAll('.slotthumb').forEach(th=>{
+   const p=slots[+th.dataset.slot];
+   th.innerHTML=p?thumbSVG(p):'';});};
+ const _sp=savePose;savePose=function(){_sp();updThumbs();};
+ const _sa=saveAll;saveAll=function(){_sa();updThumbs();};
+ updThumbs();
+ document.querySelectorAll('.stage').forEach(stage=>{
+  const b=document.createElement('button');b.className='fsbtn';b.textContent='⛶ 拡大';b.type='button';
+  b.onclick=()=>{
+   if(stage.classList.contains('fsbig')||document.fullscreenElement===stage){
+    stage.classList.remove('fsbig');if(document.fullscreenElement)document.exitFullscreen();setTimeout(render,60);return;}
+   let done=false;
+   try{const r=stage.requestFullscreen&&stage.requestFullscreen();if(r&&r.catch)r.catch(()=>{stage.classList.add('fsbig');setTimeout(render,60);});done=!!r;}catch(e){}
+   if(!done){stage.classList.add('fsbig');setTimeout(render,60);}};
+  stage.appendChild(b);});
+ document.addEventListener('fullscreenchange',()=>setTimeout(render,60));
+})();
+
+
+// ===== 描画スペースの拡大・縮小（ピンチ／ホイール）=====
+(function(){
+ const clampZ=z=>Math.max(0.45,Math.min(4,z));
+ function applyZoom(svg){
+  if(M3D.ok){if(svg.getAttribute('viewBox')!=='0 20 200 300')svg.setAttribute('viewBox','0 20 200 300');}
+  else{const z=svg._zoomV||1,pu=svg._panU||0,pv=svg._panV||0;svg.setAttribute('viewBox',(100-100/z-pu)+' '+(170-150/z-pv)+' '+(200/z)+' '+(300/z));}
+  render();
+ }
+ function applyPan(svg,dx,dy,zUse){
+  if(!dx&&!dy)return;
+  const rect=svg.getBoundingClientRect();if(!rect.width||!rect.height)return;
+  if(M3D.ok){
+   const p=M3D.panes.find(pp=>(pp.sel===selL?svgL:svgR)===svg);if(!p)return;
+   const w=p.cv.clientWidth,h=p.cv.clientHeight;if(!w||!h)return;
+   const c=CAMS[p.sel.value]||CAMS.right;
+   let halfH=1.45,halfW=halfH*w/h;if(halfW<0.85){halfW=0.85;halfH=halfW*h/w;}
+   const zm=zUse||svg._zoomV||1;halfH/=zm;halfW/=zm;
+   const vd=new THREE.Vector3(c.d[0],c.d[1],c.d[2]).normalize().negate();
+   const up=new THREE.Vector3(c.u[0],c.u[1],c.u[2]);
+   const r=new THREE.Vector3().crossVectors(vd,up).normalize();
+   const tu=new THREE.Vector3().crossVectors(r,vd).normalize();
+   const dl=r.multiplyScalar(-dx*2*halfW/w).add(tu.multiplyScalar(dy*2*halfH/h));
+   svg._panW=svg._panW||[0,0,0];
+   svg._panW[0]+=dl.x;svg._panW[1]+=dl.y;svg._panW[2]+=dl.z;
+  }else{
+   const z=zUse||svg._zoomV||1;
+   const s=Math.min(rect.width/(200/z),rect.height/(300/z));
+   if(s>0){svg._panU=(svg._panU||0)+dx/s;svg._panV=(svg._panV||0)+dy/s;}
+  }
+ }
+ for(const svg of [svgL,svgR]){
+  svg._zoomV=1;svg._panW=[0,0,0];svg._panU=0;svg._panV=0;
+  const stage=svg.closest('.stage');if(!stage)continue;
+  stage.addEventListener('mousedown',e=>{if(e.button===1)e.preventDefault();},true);
+  let midDrag=null;
+  stage.addEventListener('pointerdown',e=>{
+   if(e.pointerType==='mouse'&&e.button===1){
+    e.preventDefault();e.stopPropagation();
+    midDrag={x:e.clientX,y:e.clientY};
+   }
+  },true);
+  window.addEventListener('pointermove',e=>{
+   if(!midDrag)return;
+   applyPan(svg,e.clientX-midDrag.x,e.clientY-midDrag.y);
+   midDrag={x:e.clientX,y:e.clientY};
+   applyZoom(svg);
+  },true);
+  window.addEventListener('pointerup',e=>{if(e.button===1)midDrag=null;},true);
+  stage.addEventListener('wheel',e=>{
+   e.preventDefault();
+   svg._zoomV=clampZ((svg._zoomV||1)*Math.exp(-e.deltaY*0.0022));
+   applyZoom(svg);
+  },{passive:false});
+  const pts=new Map();let pinch=null,synth=false;
+  stage.addEventListener('pointerdown',e=>{
+   if(e.pointerType==='mouse')return;
+   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+   if(pts.size===2){
+    e.stopPropagation();
+    const a=[...pts.values()];
+    pinch={d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),z:svg._zoomV||1,cx:(a[0].x+a[1].x)/2,cy:(a[0].y+a[1].y)/2};
+    synth=true;
+    try{svg.dispatchEvent(new PointerEvent('pointerup',{pointerId:[...pts.keys()][0],bubbles:true}));}catch(err){}
+    synth=false;
+   }
+  },true);
+  stage.addEventListener('pointermove',e=>{
+   if(!pts.has(e.pointerId))return;
+   pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+   if(pinch&&pts.size===2){
+    e.stopPropagation();
+    const a=[...pts.values()];
+    const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+    if(pinch.d>0)svg._zoomV=clampZ(pinch.z*d/pinch.d);
+    const cx=(a[0].x+a[1].x)/2,cy=(a[0].y+a[1].y)/2;
+    applyPan(svg,cx-pinch.cx,cy-pinch.cy,pinch.z);
+    pinch.cx=cx;pinch.cy=cy;
+    applyZoom(svg);
+   }
+  },true);
+  const endP=e=>{
+   if(synth)return;
+   if(!pts.has(e.pointerId))return;
+   if(pinch)e.stopPropagation();
+   pts.delete(e.pointerId);
+   if(pts.size<2)pinch=null;
+  };
+  stage.addEventListener('pointerup',endP,true);
+  stage.addEventListener('pointercancel',endP,true);
+ }
+})();
+
 (function init3D(){
  try{
   const t=document.createElement('canvas');
