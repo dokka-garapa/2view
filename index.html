@@ -37,12 +37,18 @@ body{height:100dvh;box-sizing:border-box}
 .pane{display:flex;flex-direction:column;min-height:0}
 .stage{flex:1;min-height:0}
 .stage svg{width:100%;height:100%}
+
+.langbar{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.langbar::-webkit-scrollbar{display:none}
+.langb{flex:0 0 auto;min-width:44px;padding:7px 10px;border-radius:999px;border:2px solid #f0b64a;background:#fff;color:#6b543a;font-weight:700;font-size:14px;cursor:pointer}
+.langb.on{background:linear-gradient(180deg,#ffb63d,#ff9412);border-color:#ff9412;color:#fff}
 </style>
-<style>.btns button:disabled{opacity:.45}.handrow button{font-size:11px;padding:9px 2px}.handb.on{background:#ffb300;color:#4e342e;border-color:#ffb300}.slots{display:flex;gap:6px}.slots button{padding:7px 0;font-size:15px}.slotb.on{background:#ffb300;color:#4e342e;border-color:#ffb300}#rotmode.on,#rigtoggle.on{background:#ffb300;color:#4e342e}</style>
+<style>.btns button:disabled{opacity:.45}.handrow button{font-size:11px;padding:9px 2px}.handb.on{background:#ffb300;color:#4e342e;border-color:#ffb300}.slots{display:flex;gap:6px}.slots button{padding:7px 0;font-size:15px}.slotb.on{background:#ffb300;color:#4e342e;border-color:#ffb300}#rotmode.on,#rigtoggle.on,#ikmode.on{background:#ffb300;color:#4e342e}</style>
 </head>
 <body>
+<div class="langbar"><button type="button" class="langb on" data-lang="ja">日</button><button type="button" class="langb" data-lang="en">EN</button><button type="button" class="langb" data-lang="ko">한</button><button type="button" class="langb" data-lang="zh">中</button><button type="button" class="langb" data-lang="fr">FR</button><button type="button" class="langb" data-lang="es">ES</button><button type="button" class="langb" data-lang="ar">ع</button><button type="button" class="langb" data-lang="th">ไทย</button></div>
 <h1>リグ人形2面ポーズビュー</h1>
-<div class="msg" id="msg">左（正面）と右（横）、どちらの関節（丸）もドラッグして動かせるよ。もう片方が連動する。</div>
+<div class="msg" id="msg">左と右の人形、どちらの関節(◉)もドラッグして動かせます。連動して動きます。2本指で拡大・縮小、3本指でカメラ移動します。(マウス操作:ホイール回転で拡大・縮小、ホイール押し込みでカメラ移動)</div>
 <div class="slots"><button class="sub slotb on" data-slot="0">1</button><button class="sub slotb" data-slot="1">2</button><button class="sub slotb" data-slot="2">3</button><button class="sub slotb" data-slot="3">4</button><button class="sub slotb" data-slot="4">5</button></div>
 
 <div class="panes">
@@ -50,7 +56,7 @@ body{height:100dvh;box-sizing:border-box}
   <div class="pane"><select id="selR" aria-label="右画面の視点"><option value="right">横（右向き）</option><option value="left">横（左向き）</option><option value="back">後ろ</option><option value="front">前</option><option value="top">真上</option><option value="bottom">真下</option></select><div class="stage"><canvas class="gl" id="glR"></canvas><svg id="svgR" viewBox="0 20 200 300"></svg></div></div>
 </div>
 <div class="leg"><span style="--c:var(--near)">右手足</span><span style="--c:var(--far)">左手足</span></div>
-<div class="btns"><button class="sub" id="reset">リセット</button><button class="sub" id="rotmode">♻️首・腰・手首回転モード</button><button class="sub on" id="rigtoggle">◉リグ表示 ON/OFF</button></div>
+<div class="btns"><button class="sub" id="reset">リセット</button><button class="sub" id="rotmode">♻️首・腰・手首・足首回転モード</button><button class="sub" id="ikmode">🦾 IKモード</button><button class="sub on" id="rigtoggle">◉リグ表示 ON/OFF</button></div>
 <div class="btns"><button class="sub" id="exportimg">📷 画像を書き出し</button><button class="sub" id="shareimg">⬆️共有</button></div>
 <div class="btns"><button class="sub" id="undo" disabled>ひとつ戻る</button><button class="sub" id="redo" disabled>ひとつ進む</button></div>
 <div class="btns"><button class="sub" id="lastreset" disabled>最後にさわった部分をリセット</button></div>
@@ -64,6 +70,39 @@ body{height:100dvh;box-sizing:border-box}
 </div>
 <div class="btns handrow"><button class="sub handb" data-hand="L" data-shape="fist">左手・グーの形✊</button><button class="sub handb" data-hand="L" data-shape="point">左手・指差しの形☝️</button><button class="sub handb on" data-hand="L" data-shape="open">左手・指を伸ばした形✋</button></div>
 <div class="btns handrow"><button class="sub handb" data-hand="R" data-shape="fist">右手・グーの形✊</button><button class="sub handb" data-hand="R" data-shape="point">右手・指差しの形☝️</button><button class="sub handb on" data-hand="R" data-shape="open">右手・指を伸ばした形✋</button></div>
+<script>
+const STR8={"ja": {"ikmode":"🦾 IKモード","msgIkOn":"IKモードON：手首・指先をドラッグすると肘が、足首・つま先をドラッグすると膝が、自然に曲がります。頭をドラッグすると胸と頭が追従します。","title": "リグ人形2面ポーズビュー", "msgHome": "左と右の人形、どちらの関節(◉)もドラッグして動かせます。連動して動きます。2本指で拡大・縮小、3本指でカメラ移動します。(マウス操作:ホイール回転で拡大・縮小、ホイール押し込みでカメラ移動)", "msgReset": "どちらの画面の関節（丸）もドラッグできるよ。上のプルダウンで視点を切り替えられる。", "msgRotOn": "首・腰・手首・足首回転モードON：腰・胸・首をドラッグすると回転し、手首・足首をドラッグすると付け根でねじれ、指先をドラッグすると手首が、つま先をドラッグすると足首が曲がります。それ以外のリグは動きません。", "msgRigOn": "リグ表示中：関節の丸をドラッグして動かせるよ。", "msgRigOff": "リグ非表示：見えなくても、関節のあった場所をドラッグして動かせるよ。", "vRight": "横（右向き）", "vLeft": "横（左向き）", "vBack": "後ろ", "vFront": "前", "vTop": "真上", "vBottom": "真下", "ariaL": "左画面の視点", "ariaR": "右画面の視点", "legNear": "右手足", "legFar": "左手足", "reset": "リセット", "rotmode": "♻️首・腰・手首・足首回転モード", "rigtoggle": "◉リグ表示 ON/OFF", "exportimg": "📷 画像を書き出し", "shareimg": "⬆️共有", "undo": "ひとつ戻る", "redo": "ひとつ進む", "lastreset": "最後にさわった部分をリセット", "expAlt": "書き出した画像", "expNote": "画像を長押しすると保存できます", "download": "ダウンロード", "close": "閉じる", "slotsLabel": "保存ポーズ", "expand": "⛶ 拡大", "dirFront": "▲前", "hLFist": "左手・グーの形✊", "hLPoint": "左手・指差しの形☝️", "hLOpen": "左手・指を伸ばした形✋", "hRFist": "右手・グーの形✊", "hRPoint": "右手・指差しの形☝️", "hROpen": "右手・指を伸ばした形✋", "joints": {"hip": "腰", "chest": "胸", "head": "頭", "shN": "右肩", "elbowN": "右ひじ", "wristN": "右手首", "fingerN": "右指先", "shF": "左肩", "elbowF": "左ひじ", "wristF": "左手首", "fingerF": "左指先", "kneeN": "右ひざ", "ankleN": "右足首", "toeN": "右つま先", "toeTipN": "右つま先端", "kneeF": "左ひざ", "ankleF": "左足首", "toeF": "左つま先", "toeTipF": "左つま先端"}}, "en": {"ikmode":"🦾 IK mode","msgIkOn":"IK mode ON: drag a wrist or fingertip and the elbow bends naturally; drag an ankle or toe and the knee bends; drag the head and the chest and head follow.","title": "Rig Puppet Two-View Pose Viewer", "msgHome": "Drag the joints (◉) of either puppet, left or right. They move together. Pinch with two fingers to zoom, and drag with three fingers to move the camera. (With a mouse: scroll the wheel to zoom, press the wheel and drag to move the camera.)", "msgReset": "You can drag the joints (circles) in either view. Use the pull-downs above to switch viewpoints.", "msgRotOn": "Neck/Hips/Wrist/Ankle rotation mode ON: drag the hips, chest or neck to rotate, drag a wrist or ankle to twist it at the base, drag a fingertip to bend the wrist, and drag a toe to bend the ankle. Other rigs won't move.", "msgRigOn": "Rig shown: drag the joint circles to move them.", "msgRigOff": "Rig hidden: you can still drag where the joints were to move them.", "vRight": "Side (facing right)", "vLeft": "Side (facing left)", "vBack": "Back", "vFront": "Front", "vTop": "Top", "vBottom": "Bottom", "ariaL": "Left view", "ariaR": "Right view", "legNear": "Right limbs", "legFar": "Left limbs", "reset": "Reset", "rotmode": "♻️ Neck/Hips/Wrist/Ankle rotation mode", "rigtoggle": "◉ Show rig ON/OFF", "exportimg": "📷 Export image", "shareimg": "⬆️ Share", "undo": "Undo", "redo": "Redo", "lastreset": "Reset last touched part", "expAlt": "Exported image", "expNote": "Long-press the image to save it", "download": "Download", "close": "Close", "slotsLabel": "Saved poses", "expand": "⛶ Enlarge", "dirFront": "▲Front", "hLFist": "Left hand · Fist ✊", "hLPoint": "Left hand · Pointing ☝️", "hLOpen": "Left hand · Open ✋", "hRFist": "Right hand · Fist ✊", "hRPoint": "Right hand · Pointing ☝️", "hROpen": "Right hand · Open ✋", "joints": {"hip": "Hips", "chest": "Chest", "head": "Head", "shN": "R Shoulder", "elbowN": "R Elbow", "wristN": "R Wrist", "fingerN": "R Fingertip", "shF": "L Shoulder", "elbowF": "L Elbow", "wristF": "L Wrist", "fingerF": "L Fingertip", "kneeN": "R Knee", "ankleN": "R Ankle", "toeN": "R Toe", "toeTipN": "R Toe tip", "kneeF": "L Knee", "ankleF": "L Ankle", "toeF": "L Toe", "toeTipF": "L Toe tip"}}, "ko": {"ikmode":"🦾 IK 모드","msgIkOn":"IK 모드 ON: 손목·손가락 끝을 드래그하면 팔꿈치가, 발목·발가락을 드래그하면 무릎이 자연스럽게 구부러집니다. 머리를 드래그하면 가슴과 머리가 따라옵니다.","title": "리그 인형 2면 포즈 뷰어", "msgHome": "왼쪽과 오른쪽 인형, 어느 쪽 관절(◉)이든 드래그해서 움직일 수 있습니다. 연동해서 움직입니다. 두 손가락으로 확대·축소, 세 손가락으로 드래그하면 카메라가 이동합니다. (마우스 조작: 휠 회전으로 확대·축소, 휠을 누른 채 드래그하면 카메라 이동)", "msgReset": "어느 화면의 관절(원)이든 드래그할 수 있어요. 위의 풀다운으로 시점을 바꿀 수 있습니다.", "msgRotOn": "목·허리·손목·발목 회전 모드 ON: 허리·가슴·목을 드래그하면 회전하고, 손목·발목을 드래그하면 뿌리에서 비틀리고, 손가락 끝을 드래그하면 손목이, 발끝을 드래그하면 발목이 구부러집니다. 다른 리그는 움직이지 않습니다.", "msgRigOn": "리그 표시 중: 관절 원을 드래그해서 움직일 수 있어요.", "msgRigOff": "리그 숨김: 보이지 않아도 관절이 있던 자리를 드래그하면 움직일 수 있어요.", "vRight": "옆면 (오른쪽向き)", "vLeft": "옆면 (왼쪽向き)", "vBack": "뒤", "vFront": "앞", "vTop": "위", "vBottom": "아래", "ariaL": "왼쪽 화면 시점", "ariaR": "오른쪽 화면 시점", "legNear": "오른쪽 팔다리", "legFar": "왼쪽 팔다리", "reset": "리셋", "rotmode": "♻️ 목·허리·손목·발목 회전 모드", "rigtoggle": "◉ 리그 표시 ON/OFF", "exportimg": "📷 이미지 내보내기", "shareimg": "⬆️ 공유", "undo": "되돌리기", "redo": "다시 실행", "lastreset": "마지막으로 만진 부분 리셋", "expAlt": "내보낸 이미지", "expNote": "이미지를 길게 누르면 저장할 수 있습니다", "download": "다운로드", "close": "닫기", "slotsLabel": "저장된 포즈", "expand": "⛶ 확대", "dirFront": "▲앞", "hLFist": "왼손 · 주먹 모양 ✊", "hLPoint": "왼손 · 가리키는 모양 ☝️", "hLOpen": "왼손 · 편 모양 ✋", "hRFist": "오른손 · 주먹 모양 ✊", "hRPoint": "오른손 · 가리키는 모양 ☝️", "hROpen": "오른손 · 편 모양 ✋", "joints": {"hip": "허리", "chest": "가슴", "head": "머리", "shN": "오른쪽 어깨", "elbowN": "오른쪽 팔꿈치", "wristN": "오른쪽 손목", "fingerN": "오른쪽 손가락 끝", "shF": "왼쪽 어깨", "elbowF": "왼쪽 팔꿈치", "wristF": "왼쪽 손목", "fingerF": "왼쪽 손가락 끝", "kneeN": "오른쪽 무릎", "ankleN": "오른쪽 발목", "toeN": "오른쪽 발가락", "toeTipN": "오른쪽 발가락 끝", "kneeF": "왼쪽 무릎", "ankleF": "왼쪽 발목", "toeF": "왼쪽 발가락", "toeTipF": "왼쪽 발가락 끝"}}, "zh": {"ikmode":"🦾 IK模式","msgIkOn":"IK模式开启：拖动手腕・指尖，手肘会自然弯曲；拖动脚踝・脚趾，膝盖会自然弯曲；拖动头部，胸和头会跟随。","title": "骨骼人偶双面姿势视图", "msgHome": "左和右的人偶，哪边的关节(◉)都可以拖动。会联动一起动。两根手指捏合放大·缩小，三根手指拖动移动相机。(鼠标操作：滚动滚轮放大·缩小，按住滚轮拖动移动相机)", "msgReset": "两边画面的关节（圆圈）都可以拖动。用上方的下拉菜单可以切换视角。", "msgRotOn": "颈・腰・手腕・脚腕旋转模式开启：拖动腰、胸、颈可以旋转，拖动手腕或脚腕可以在根部扭转，拖动指尖可以弯曲手腕，拖动脚尖可以弯曲脚腕。其他骨骼点不会移动。", "msgRigOn": "骨骼显示中：拖动关节圆圈即可移动。", "msgRigOff": "骨骼隐藏：即使看不见，也可以拖动关节原来的位置来移动。", "vRight": "侧面（朝右）", "vLeft": "侧面（朝左）", "vBack": "后面", "vFront": "前面", "vTop": "正上方", "vBottom": "正下方", "ariaL": "左画面视角", "ariaR": "右画面视角", "legNear": "右手脚", "legFar": "左手脚", "reset": "重置", "rotmode": "♻️ 颈・腰・手腕・脚腕旋转模式", "rigtoggle": "◉ 显示骨骼 ON/OFF", "exportimg": "📷 导出图片", "shareimg": "⬆️ 分享", "undo": "撤销一步", "redo": "重做一步", "lastreset": "重置最后触碰的部位", "expAlt": "导出的图片", "expNote": "长按图片即可保存", "download": "下载", "close": "关闭", "slotsLabel": "保存的姿势", "expand": "⛶ 放大", "dirFront": "▲前", "hLFist": "左手 · 握拳 ✊", "hLPoint": "左手 · 指向 ☝️", "hLOpen": "左手 · 张开 ✋", "hRFist": "右手 · 握拳 ✊", "hRPoint": "右手 · 指向 ☝️", "hROpen": "右手 · 张开 ✋", "joints": {"hip": "腰", "chest": "胸", "head": "头", "shN": "右肩", "elbowN": "右肘", "wristN": "右手腕", "fingerN": "右指尖", "shF": "左肩", "elbowF": "左肘", "wristF": "左手腕", "fingerF": "左指尖", "kneeN": "右膝", "ankleN": "右脚踝", "toeN": "右脚趾", "toeTipN": "右脚趾尖", "kneeF": "左膝", "ankleF": "左脚踝", "toeF": "左脚趾", "toeTipF": "左脚趾尖"}}, "fr": {"ikmode":"🦾 Mode IK","msgIkOn":"Mode IK activé : faites glisser un poignet ou le bout d'un doigt et le coude se plie naturellement ; faites glisser une cheville ou un orteil et le genou se plie ; faites glisser la tête et la poitrine et la tête suivent.","title": "Marionnette rig — pose en 2 vues", "msgHome": "Faites glisser les articulations (◉) de l'une ou l'autre marionnette, à gauche ou à droite. Elles bougent ensemble. Pincez à deux doigts pour zoomer, faites glisser à trois doigts pour déplacer la caméra. (Souris : molette pour zoomer, molette enfoncée et glisser pour déplacer la caméra.)", "msgReset": "Vous pouvez faire glisser les articulations (cercles) dans les deux vues. Changez de point de vue avec les menus déroulants ci-dessus.", "msgRotOn": "Mode rotation cou/hanches/poignet/cheville activé : faites glisser les hanches, la poitrine ou le cou pour pivoter, un poignet ou une cheville pour les tordre à la base, le bout d'un doigt pour plier le poignet, et un orteil pour plier la cheville. Les autres points ne bougent pas.", "msgRigOn": "Rig affiché : faites glisser les cercles des articulations pour les déplacer.", "msgRigOff": "Rig masqué : vous pouvez toujours faire glisser l'emplacement des articulations pour les déplacer.", "vRight": "Profil (vers la droite)", "vLeft": "Profil (vers la gauche)", "vBack": "Dos", "vFront": "Face", "vTop": "Dessus", "vBottom": "Dessous", "ariaL": "Vue de gauche", "ariaR": "Vue de droite", "legNear": "Membres droits", "legFar": "Membres gauches", "reset": "Réinitialiser", "rotmode": "♻️ Mode rotation cou/hanches/poignet/cheville", "rigtoggle": "◉ Afficher le rig ON/OFF", "exportimg": "📷 Exporter l'image", "shareimg": "⬆️ Partager", "undo": "Annuler", "redo": "Rétablir", "lastreset": "Réinitialiser la dernière partie touchée", "expAlt": "Image exportée", "expNote": "Appuyez longuement sur l'image pour l'enregistrer", "download": "Télécharger", "close": "Fermer", "slotsLabel": "Poses enregistrées", "expand": "⛶ Agrandir", "dirFront": "▲Avant", "hLFist": "Main gauche · Poing ✊", "hLPoint": "Main gauche · Doigt pointé ☝️", "hLOpen": "Main gauche · Ouverte ✋", "hRFist": "Main droite · Poing ✊", "hRPoint": "Main droite · Doigt pointé ☝️", "hROpen": "Main droite · Ouverte ✋", "joints": {"hip": "Hanches", "chest": "Poitrine", "head": "Tête", "shN": "Épaule D", "elbowN": "Coude D", "wristN": "Poignet D", "fingerN": "Bout du doigt D", "shF": "Épaule G", "elbowF": "Coude G", "wristF": "Poignet G", "fingerF": "Bout du doigt G", "kneeN": "Genou D", "ankleN": "Cheville D", "toeN": "Orteil D", "toeTipN": "Pointe de l'orteil D", "kneeF": "Genou G", "ankleF": "Cheville G", "toeF": "Orteil G", "toeTipF": "Pointe de l'orteil G"}}, "es": {"ikmode":"🦾 Modo IK","msgIkOn":"Modo IK activado: arrastra una muñeca o la punta de un dedo y el codo se dobla de forma natural; arrastra un tobillo o un dedo del pie y la rodilla se dobla; arrastra la cabeza y el pecho y la cabeza la siguen.","title": "Muñeco con rig — pose en 2 vistas", "msgHome": "Arrastra las articulaciones (◉) de cualquiera de los dos muñecos, el de la izquierda o el de la derecha. Se mueven juntos. Pellizca con dos dedos para ampliar o reducir y arrastra con tres dedos para mover la cámara. (Ratón: gira la rueda para ampliar o reducir, pulsa la rueda y arrastra para mover la cámara.)", "msgReset": "Puedes arrastrar las articulaciones (círculos) en ambas vistas. Cambia el punto de vista con los menús desplegables de arriba.", "msgRotOn": "Modo de rotación de cuello/cadera/muñeca/tobillo activado: arrastra la cadera, el pecho o el cuello para girar, una muñeca o un tobillo para torcerlos desde la base, la punta de un dedo para doblar la muñeca y un dedo del pie para doblar el tobillo. Los demás puntos no se mueven.", "msgRigOn": "Rig visible: arrastra los círculos de las articulaciones para moverlas.", "msgRigOff": "Rig oculto: aunque no se vea, puedes arrastrar donde estaban las articulaciones para moverlas.", "vRight": "Lado (mirando a la derecha)", "vLeft": "Lado (mirando a la izquierda)", "vBack": "Espalda", "vFront": "Frente", "vTop": "Desde arriba", "vBottom": "Desde abajo", "ariaL": "Vista izquierda", "ariaR": "Vista derecha", "legNear": "Brazo y pierna derechos", "legFar": "Brazo y pierna izquierdos", "reset": "Reiniciar", "rotmode": "♻️ Modo de rotación cuello/cadera/muñeca/tobillo", "rigtoggle": "◉ Mostrar rig ON/OFF", "exportimg": "📷 Exportar imagen", "shareimg": "⬆️ Compartir", "undo": "Deshacer", "redo": "Rehacer", "lastreset": "Reiniciar la última parte tocada", "expAlt": "Imagen exportada", "expNote": "Mantén pulsada la imagen para guardarla", "download": "Descargar", "close": "Cerrar", "slotsLabel": "Poses guardadas", "expand": "⛶ Ampliar", "dirFront": "▲Frente", "hLFist": "Mano izquierda · Puño ✊", "hLPoint": "Mano izquierda · Señalando ☝️", "hLOpen": "Mano izquierda · Abierta ✋", "hRFist": "Mano derecha · Puño ✊", "hRPoint": "Mano derecha · Señalando ☝️", "hROpen": "Mano derecha · Abierta ✋", "joints": {"hip": "Cadera", "chest": "Pecho", "head": "Cabeza", "shN": "Hombro D", "elbowN": "Codo D", "wristN": "Muñeca D", "fingerN": "Punta del dedo D", "shF": "Hombro I", "elbowF": "Codo I", "wristF": "Muñeca I", "fingerF": "Punta del dedo I", "kneeN": "Rodilla D", "ankleN": "Tobillo D", "toeN": "Dedo del pie D", "toeTipN": "Punta del pie D", "kneeF": "Rodilla I", "ankleF": "Tobillo I", "toeF": "Dedo del pie I", "toeTipF": "Punta del pie I"}}, "th": {"ikmode":"🦾 โหมด IK","msgIkOn":"โหมด IK เปิดอยู่: ลากข้อมือหรือปลายนิ้ว ข้อศอกจะงออย่างเป็นธรรมชาติ ลากข้อเท้าหรือนิ้วเท้า เข่าจะงอ ลากหัว อกและหัวจะตามมา","title": "ตุ๊กตาริก มุมมองท่าทาง 2 ด้าน", "msgHome": "ลากข้อต่อ (◉) ของตุ๊กตาทั้งซ้ายและขวาได้ ทั้งสองตัวจะขยับไปด้วยกัน ใช้นิ้ว 2 นิ้วเพื่อขยาย·ย่อ ลาก 3 นิ้วเพื่อเลื่อนกล้อง (ใช้เมาส์: หมุนล้อเพื่อขยาย·ย่อ กดล้อค้างแล้วลากเพื่อเลื่อนกล้อง)", "msgReset": "ลากข้อต่อ (วงกลม) ได้ทั้งสองจอ ใช้เมนูแบบเลื่อนลงด้านบนเพื่อเปลี่ยนมุมมอง", "msgRotOn": "โหมดหมุนคอ·เอว·ข้อมือ·ข้อเท้า เปิดอยู่: ลากเอว อก หรือคอเพื่อหมุน ลากข้อมือหรือข้อเท้าเพื่อบิดที่โคน ลากปลายนิ้วเพื่องอข้อมือ และลากปลายเท้าเพื่องอข้อเท้า จุดอื่นจะไม่ขยับ", "msgRigOn": "กำลังแสดงริก: ลากวงกลมข้อต่อเพื่อขยับ", "msgRigOff": "ซ่อนริก: แม้มองไม่เห็น ก็ลากตรงตำแหน่งที่ข้อต่อเคยอยู่เพื่อขยับได้", "vRight": "ด้านข้าง (หันขวา)", "vLeft": "ด้านข้าง (หันซ้าย)", "vBack": "ด้านหลัง", "vFront": "ด้านหน้า", "vTop": "ด้านบน", "vBottom": "ด้านล่าง", "ariaL": "มุมมองจอซ้าย", "ariaR": "มุมมองจอขวา", "legNear": "แขนขาขวา", "legFar": "แขนขาซ้าย", "reset": "รีเซ็ต", "rotmode": "♻️ โหมดหมุนคอ·เอว·ข้อมือ·ข้อเท้า", "rigtoggle": "◉ แสดงริก ON/OFF", "exportimg": "📷 ส่งออกภาพ", "shareimg": "⬆️ แชร์", "undo": "ย้อนกลับ", "redo": "ทำซ้ำ", "lastreset": "รีเซ็ตส่วนที่แตะล่าสุด", "expAlt": "ภาพที่ส่งออก", "expNote": "กดภาพค้างไว้เพื่อบันทึก", "download": "ดาวน์โหลด", "close": "ปิด", "slotsLabel": "ท่าที่บันทึกไว้", "expand": "⛶ ขยาย", "dirFront": "▲หน้า", "hLFist": "มือซ้าย · กำปั้น ✊", "hLPoint": "มือซ้าย · ชี้นิ้ว ☝️", "hLOpen": "มือซ้าย · แบมือ ✋", "hRFist": "มือขวา · กำปั้น ✊", "hRPoint": "มือขวา · ชี้นิ้ว ☝️", "hROpen": "มือขวา · แบมือ ✋", "joints": {"hip": "เอว", "chest": "อก", "head": "หัว", "shN": "ไหล่ขวา", "elbowN": "ข้อศอกขวา", "wristN": "ข้อมือขวา", "fingerN": "ปลายนิ้วขวา", "shF": "ไหล่ซ้าย", "elbowF": "ข้อศอกซ้าย", "wristF": "ข้อมือซ้าย", "fingerF": "ปลายนิ้วซ้าย", "kneeN": "เข่าขวา", "ankleN": "ข้อเท้าขวา", "toeN": "นิ้วเท้าขวา", "toeTipN": "ปลายนิ้วเท้าขวา", "kneeF": "เข่าซ้าย", "ankleF": "ข้อเท้าซ้าย", "toeF": "นิ้วเท้าซ้าย", "toeTipF": "ปลายนิ้วเท้าซ้าย"}}, "ar": {"ikmode":"🦾 وضع IK","msgIkOn":"وضع IK مفعّل: اسحب المعصم أو طرف الإصبع وسينثني المرفق بشكل طبيعي، واسحب الكاحل أو إصبع القدم وستنثني الركبة، واسحب الرأس وسيتبعه الصدر والرأس.","title": "دمية ريغ — عرض الوضعية من جهتين", "msgHome": "اسحب مفاصل (◉) أي من الدميتين، اليسرى أو اليمنى. تتحركان معًا. استخدم إصبعين للتكبير والتصغير، واسحب بثلاثة أصابع لتحريك الكاميرا. (بالماوس: أدر العجلة للتكبير والتصغير، واضغط العجلة واسحب لتحريك الكاميرا.)", "msgReset": "يمكنك سحب المفاصل (الدوائر) في كلا العرضين. غيّر زاوية العرض من القوائم المنسدلة في الأعلى.", "msgRotOn": "وضع تدوير الرقبة والورك والمعصم والكاحل مفعّل: اسحب الورك أو الصدر أو الرقبة للتدوير، واسحب المعصم أو الكاحل لليّهما من القاعدة، واسحب طرف الإصبع لثني المعصم، واسحب إصبع القدم لثني الكاحل. النقاط الأخرى لا تتحرك.", "msgRigOn": "الريغ ظاهر: اسحب دوائر المفاصل لتحريكها.", "msgRigOff": "الريغ مخفي: حتى لو لم يظهر، يمكنك السحب من أماكن المفاصل لتحريكها.", "vRight": "جانب (ينظر يمينًا)", "vLeft": "جانب (ينظر يسارًا)", "vBack": "الخلف", "vFront": "الأمام", "vTop": "من الأعلى", "vBottom": "من الأسفل", "ariaL": "عرض اليسار", "ariaR": "عرض اليمين", "legNear": "الذراع والساق اليمنى", "legFar": "الذراع والساق اليسرى", "reset": "إعادة تعيين", "rotmode": "♻️ وضع تدوير الرقبة والورك والمعصم والكاحل", "rigtoggle": "◉ إظهار الريغ ON/OFF", "exportimg": "📷 تصدير الصورة", "shareimg": "⬆️ مشاركة", "undo": "تراجع", "redo": "إعادة", "lastreset": "إعادة تعيين آخر جزء تم لمسه", "expAlt": "الصورة المصدّرة", "expNote": "اضغط مطولًا على الصورة لحفظها", "download": "تنزيل", "close": "إغلاق", "slotsLabel": "الوضعيات المحفوظة", "expand": "⛶ تكبير", "dirFront": "▲الأمام", "hLFist": "اليد اليسرى · قبضة ✊", "hLPoint": "اليد اليسرى · إشارة ☝️", "hLOpen": "اليد اليسرى · مفتوحة ✋", "hRFist": "اليد اليمنى · قبضة ✊", "hRPoint": "اليد اليمنى · إشارة ☝️", "hROpen": "اليد اليمنى · مفتوحة ✋", "joints": {"hip": "الورك", "chest": "الصدر", "head": "الرأس", "shN": "الكتف الأيمن", "elbowN": "المرفق الأيمن", "wristN": "المعصم الأيمن", "fingerN": "طرف الإصبع الأيمن", "shF": "الكتف الأيسر", "elbowF": "المرفق الأيسر", "wristF": "المعصم الأيسر", "fingerF": "طرف الإصبع الأيسر", "kneeN": "الركبة اليمنى", "ankleN": "الكاحل الأيمن", "toeN": "إصبع القدم الأيمن", "toeTipN": "طرف إصبع القدم الأيمن", "kneeF": "الركبة اليسرى", "ankleF": "الكاحل الأيسر", "toeF": "إصبع القدم الأيسر", "toeTipF": "طرف إصبع القدم الأيسر"}}};
+let LANG='ja';try{LANG=localStorage.getItem('rigpose_lang')||'ja';}catch(e){}
+if(!STR8[LANG])LANG='ja';
+window.T=function(k){const S=STR8[LANG];return (S&&S[k])||STR8.ja[k]||k;};
+function applyLang(){
+ const S=STR8[LANG]||STR8.ja;
+ document.title=S.title;
+ const h1=document.querySelector('h1');if(h1)h1.textContent=S.title;
+ document.documentElement.lang=LANG;
+ document.documentElement.dir=(LANG==='ar')?'rtl':'ltr';
+ document.querySelectorAll('.langb').forEach(b=>b.classList.toggle('on',b.dataset.lang===LANG));
+ const set=(id,txt)=>{const e=document.getElementById(id);if(e)e.textContent=txt;};
+ set('reset',S.reset);set('ikmode',S.ikmode);set('rotmode',S.rotmode);set('rigtoggle',S.rigtoggle);set('exportimg',S.exportimg);
+ set('shareimg',S.shareimg);set('undo',S.undo);set('redo',S.redo);set('lastreset',S.lastreset);
+ set('expdl',S.download);set('expx',S.close);
+ const ei=document.getElementById('expimg');if(ei)ei.alt=S.expAlt;
+ const en=document.querySelector('#expov>div');if(en)en.textContent=S.expNote;
+ const leg=document.querySelectorAll('.leg span');if(leg[0])leg[0].textContent=S.legNear;if(leg[1])leg[1].textContent=S.legFar;
+ const lab=document.querySelector('.slotlab');if(lab)lab.textContent=S.slotsLabel;
+ document.querySelectorAll('.fsbtn').forEach(b=>b.textContent=S.expand);
+ document.querySelectorAll('.handb').forEach(b=>{const k='h'+b.dataset.hand+(b.dataset.shape==='fist'?'Fist':b.dataset.shape==='point'?'Point':'Open');if(S[k])b.textContent=S[k];});
+ const vk={right:'vRight',left:'vLeft',back:'vBack',front:'vFront',top:'vTop',bottom:'vBottom'};
+ ['selL','selR'].forEach((id,ix)=>{const sel=document.getElementById(id);if(!sel)return;sel.setAttribute('aria-label',ix?S.ariaR:S.ariaL);for(const o of sel.options){const kk=vk[o.value];if(kk)o.textContent=S[kk];}});
+ if(typeof JNAME!=='undefined'&&S.joints){for(const k in S.joints)JNAME[k]=S.joints[k];}
+ const msg=document.getElementById('msg');
+ if(msg)msg.textContent=(typeof rotMode!=='undefined'&&rotMode)?S.msgRotOn:((typeof IKON!=='undefined'&&IKON)?S.msgIkOn:S.msgHome);
+ if(typeof render==='function')render();
+}
+function setLang(l){if(!STR8[l])return;LANG=l;try{localStorage.setItem('rigpose_lang',l);}catch(e){}applyLang();}
+document.querySelectorAll('.langb').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+window.addEventListener('DOMContentLoaded',()=>applyLang());
+</script>
 <script>
 const L={chest:85,head:28,shN:10,elbowN:48,wristN:45,fingerN:18,shF:10,elbowF:48,wristF:45,fingerF:18,kneeN:62,ankleN:60,toeN:22,toeTipN:16,kneeF:62,ankleF:60,toeF:22,toeTipF:16};
 const P={chest:'hip',head:'chest',shN:'chest',elbowN:'shN',wristN:'elbowN',fingerN:'wristN',shF:'chest',elbowF:'shF',wristF:'elbowF',fingerF:'wristF',kneeN:'hip',ankleN:'kneeN',toeN:'ankleN',toeTipN:'toeN',kneeF:'hip',ankleF:'kneeF',toeF:'ankleF',toeTipF:'toeF'};
@@ -94,7 +133,7 @@ function renderView(svg,V){
   const seg=(a,b,w,c)=>items.push({w:(a.w+b.w)/2,s:`<line x1="${a.u}" y1="${a.v}" x2="${b.u}" y2="${b.v}" stroke="${c}" stroke-width="${w*(a.k+b.k)/2}" stroke-linecap="round"/>`});
   let s='';const GL=document.body.classList.contains('glon');
   if(GL){}else if(V.v[0]===1)s+=`<line x1="0" y1="316" x2="200" y2="316" stroke="var(--line)" stroke-width="2"/>`;
-  else s+=`<line x1="100" y1="0" x2="100" y2="340" stroke="var(--line)" stroke-dasharray="3 5"/><line x1="0" y1="170" x2="200" y2="170" stroke="var(--line)" stroke-dasharray="3 5"/><text x="100" y="16" text-anchor="middle" font-size="12" fill="var(--sub)">▲前</text>`;
+  else s+=`<line x1="100" y1="0" x2="100" y2="340" stroke="var(--line)" stroke-dasharray="3 5"/><line x1="0" y1="170" x2="200" y2="170" stroke="var(--line)" stroke-dasharray="3 5"/><text x="100" y="16" text-anchor="middle" font-size="12" fill="var(--sub)">${T('dirFront')}</text>`;
   for(const q of ['N','F']){const c=q==='N'?NEAR:FAR;
     const e=pr(J['elbow'+q]),w=pr(J['wrist'+q]),k=pr(J['knee'+q]),a=pr(J['ankle'+q]),t=pr(J['toe'+q]);
     seg(pr(J['sh'+q]),e,11,c);seg(e,w,11,c);seg(w,pr(J['finger'+q]),11,c);
@@ -130,7 +169,7 @@ function rigOverlay(V,svg){
   for(const n of N)o+=line(pp[START[n]||P[n]],pp[n],col(n));
   const order=names.slice().sort((x,y)=>pp[x].w-pp[y].w);
   for(const n of order){const p=pp[n],r=n==='hip'?4:MINOR[n]?2:3.25,back=p.w<pp.hip.w-12;
-    o+=`<g opacity="${rotMode&&n!=='hip'&&n!=='chest'&&n!=='head'&&n!=='wristN'&&n!=='wristF'&&n!=='fingerN'&&n!=='fingerF'?.2:back?.6:1}"><circle cx="${p.u}" cy="${p.v}" r="${r+1.2}" fill="#1f2a30" fill-opacity=".5"/><circle cx="${p.u}" cy="${p.v}" r="${r}" fill="${col(n)}" stroke="#fff" stroke-width="1.5"/>${n==='hip'?`<circle cx="${p.u}" cy="${p.v}" r="1.3" fill="#1f2a30"/>`:''}</g>`;}
+    o+=`<g opacity="${rotMode&&n!=='hip'&&n!=='chest'&&n!=='head'&&n!=='wristN'&&n!=='wristF'&&n!=='fingerN'&&n!=='fingerF'&&n!=='ankleN'&&n!=='ankleF'&&n!=='toeN'&&n!=='toeF'&&n!=='toeTipN'&&n!=='toeTipF'?.2:back?.6:1}"><circle cx="${p.u}" cy="${p.v}" r="${r+1.2}" fill="#1f2a30" fill-opacity=".5"/><circle cx="${p.u}" cy="${p.v}" r="${r}" fill="${col(n)}" stroke="#fff" stroke-width="1.5"/>${n==='hip'?`<circle cx="${p.u}" cy="${p.v}" r="1.3" fill="#1f2a30"/>`:''}</g>`;}
   if(ACTIVE&&pp[ACTIVE]){const p=pp[ACTIVE],r=ACTIVE==='hip'?4:MINOR[ACTIVE]?2:3.25,lx=clamp(p.u,24,176),ly=Math.max(34,p.v-r-14);
     o+=`<circle cx="${p.u}" cy="${p.v}" r="${r+4}" fill="none" stroke="#ffd400" stroke-width="3"/><text x="${lx}" y="${ly}" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" stroke="#1f2a30" stroke-width="3.5" paint-order="stroke">${JNAME[ACTIVE]}</text>`;}
   return o;
@@ -159,16 +198,18 @@ function bindDrag(svg,sel){
       for(const i of AX)J[n][i]=pv[i]+v[i]*cs+c[i]*si+ax[i]*d*(1-cs);}};
   let dragSnap=null;
   svg.addEventListener('pointerdown',e=>{const V=VIEWS[sel.value],p=pt(e),D=svg._D;let best=null,bd=26,bo=null;
-    for(const n of (rotMode?['hip','chest','head','wristN','wristF','fingerN','fingerF']:['hip',...N])){const q=proj(V,J[n]),t=D&&D[n]?D[n]:q,d=Math.hypot(p.x-t.u,p.y-t.v)+(MINOR[n]?7:0);if(d<bd){bd=d;best=n;bo={x:q.u-t.u,y:q.v-t.v};}}
+    for(const n of (rotMode?['hip','chest','head','wristN','wristF','fingerN','fingerF','ankleN','ankleF','toeN','toeF','toeTipN','toeTipF']:['hip',...N])){const q=proj(V,J[n]),t=D&&D[n]?D[n]:q,d=Math.hypot(p.x-t.u,p.y-t.v)+(MINOR[n]?7:0);if(d<bd){bd=d;best=n;bo={x:q.u-t.u,y:q.v-t.v};}}
     if(!best)return;off=bo;drag=best;ACTIVE=best;dragSnap=snapPose();svg.setPointerCapture(e.pointerId);render();
-    prevP=(rotMode&&(best==='hip'||best==='chest'||best==='head'||best==='wristN'||best==='wristF'||best==='fingerN'||best==='fingerF'))?{x:p.x+off.x,y:p.y+off.y}:null;});
+    prevP=(rotMode&&(best==='hip'||best==='chest'||best==='head'||best==='wristN'||best==='wristF'||best==='fingerN'||best==='fingerF'||best==='ankleN'||best==='ankleF'||best==='toeN'||best==='toeF'||best==='toeTipN'||best==='toeTipF'))?{x:p.x+off.x,y:p.y+off.y}:null;});
   svg.addEventListener('pointermove',e=>{
     if(!drag)return;const V=VIEWS[sel.value],p0=pt(e),p={x:p0.x+off.x,y:p0.y+off.y};
-    if(rotMode&&(drag==='hip'||drag==='chest'||drag==='head'||drag==='wristN'||drag==='wristF'||drag==='fingerN'||drag==='fingerF')){const pv=(drag==='fingerN'||drag==='fingerF'||drag==='head')?{x:J[P[drag]].x,y:J[P[drag]].y,z:J[P[drag]].z}:{x:J[drag].x,y:J[drag].y,z:J[drag].z};
+    if(rotMode&&(drag==='hip'||drag==='chest'||drag==='head'||drag==='wristN'||drag==='wristF'||drag==='fingerN'||drag==='fingerF'||drag==='ankleN'||drag==='ankleF'||drag==='toeN'||drag==='toeF'||drag==='toeTipN'||drag==='toeTipF')){const ej=drag==='toeTipN'?'toeN':drag==='toeTipF'?'toeF':drag;const pv=(drag==='fingerN'||drag==='fingerF'||drag==='head'||drag==='toeN'||drag==='toeF'||drag==='toeTipN'||drag==='toeTipF')?{x:J[P[ej]].x,y:J[P[ej]].y,z:J[P[ej]].z}:{x:J[drag].x,y:J[drag].y,z:J[drag].z};
       if(prevP){const dx=p.x-prevP.x,dy=p.y-prevP.y,dt=dx*0.01+(sel.value==='right'?dy*0.01:sel.value==='left'?-dy*0.01:0);
         if(dt){if(drag==='wristN')wristTwist.R=Math.max(-Math.PI/2,Math.min(Math.PI/2,wristTwist.R+dt));
           else if(drag==='wristF')wristTwist.L=Math.max(-Math.PI/2,Math.min(Math.PI/2,wristTwist.L+dt));
-          else{let dt2=dt;if(drag==='fingerN'||drag==='fingerF')dt2=clampWrist(drag,V,dt2);if(dt2)rotAng(drag==='hip'?N:DESC[drag],pv,vAxis(V),dt2);}}}
+          else if(drag==='ankleN')ankleTwist.R=Math.max(-Math.PI/2,Math.min(Math.PI/2,ankleTwist.R+dt));
+          else if(drag==='ankleF')ankleTwist.L=Math.max(-Math.PI/2,Math.min(Math.PI/2,ankleTwist.L+dt));
+          else{let dt2=dt;if(drag==='fingerN'||drag==='fingerF'||drag==='toeN'||drag==='toeF'||drag==='toeTipN'||drag==='toeTipF')dt2=clampWrist(ej,V,dt2);if(dt2)rotAng(drag==='hip'?N:DESC[ej],pv,vAxis(V),dt2);}}}
       prevP={x:p.x,y:p.y};render();return;}
     if(drag==='hip'){const o=proj(V,J.hip),d=inv(V,p.x-o.u,p.y-o.v,0),H=J.hip;
       const dx=clamp(H.x+d.x,40,160)-H.x,dy=clamp(H.y+d.y,130,250)-H.y,dz=clamp(H.z+d.z,-50,50)-H.z;
@@ -184,26 +225,26 @@ function bindDrag(svg,sel){
   const end=()=>{if(drag&&dragSnap&&snapPose()!==dragSnap){histU.push(dragSnap);if(histU.length>50)histU.shift();histR=[];lastTouch=drag;}dragSnap=null;drag=null;prevP=null;ACTIVE=null;updHist();savePose();render();};svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
 }
 bindDrag(svgL,selL);bindDrag(svgR,selR);
-document.getElementById('rotmode').onclick=()=>{rotMode=!rotMode;document.getElementById('rotmode').classList.toggle('on',rotMode);document.getElementById('msg').textContent=rotMode?'首・腰・手首回転モードON：腰・胸・首をドラッグすると回転し、手首をドラッグすると付け根でねじれ、指先をドラッグすると手首が曲がります。それ以外のリグは動きません。':'左（正面）と右（横）、どちらの関節（丸）もドラッグして動かせるよ。もう片方が連動する。';render();};
+document.getElementById('rotmode').onclick=()=>{rotMode=!rotMode;document.getElementById('rotmode').classList.toggle('on',rotMode);document.getElementById('msg').textContent=rotMode?T('msgRotOn'):T('msgHome');render();};
 
-let wristTwist={R:0,L:0};
+let wristTwist={R:0,L:0};let ankleTwist={R:0,L:0};
 const SKEY='rigpose_slots_v1';
 let slots=[null,null,null,null,null],curSlot=0;
-function savePose(){try{slots[curSlot]=JSON.parse(JSON.stringify(J));localStorage.setItem(SKEY,JSON.stringify({slots:slots,cur:curSlot,T:wristTwist,H:(typeof handShape!=='undefined'?handShape:null)}));}catch(e){}}
-function saveAll(){try{localStorage.setItem(SKEY,JSON.stringify({slots:slots,cur:curSlot,T:wristTwist,H:(typeof handShape!=='undefined'?handShape:null)}));}catch(e){}}
+function savePose(){try{slots[curSlot]=JSON.parse(JSON.stringify(J));localStorage.setItem(SKEY,JSON.stringify({slots:slots,cur:curSlot,T:wristTwist,A:ankleTwist,H:(typeof handShape!=='undefined'?handShape:null)}));}catch(e){}}
+function saveAll(){try{localStorage.setItem(SKEY,JSON.stringify({slots:slots,cur:curSlot,T:wristTwist,A:ankleTwist,H:(typeof handShape!=='undefined'?handShape:null)}));}catch(e){}}
 function markSlot(){document.querySelectorAll('.slotb').forEach((b,bi)=>b.classList.toggle('on',bi===curSlot));}
 function setSlot(i){savePose();curSlot=i;ACTIVE=null;if(slots[i])J=JSON.parse(JSON.stringify(slots[i]));else{J=build(STAND,{x:100,y:190,z:0});slots[i]=JSON.parse(JSON.stringify(J));}histU=[];histR=[];lastTouch=null;updHist();markSlot();saveAll();render();}
 document.querySelectorAll('.slotb').forEach(b=>b.onclick=()=>setSlot(+b.dataset.slot));
-(function(){try{const d=JSON.parse(localStorage.getItem(SKEY));if(d&&Array.isArray(d.slots)&&d.slots.length===5){slots=d.slots;curSlot=Math.min(4,Math.max(0,d.cur|0));if(slots[curSlot])J=JSON.parse(JSON.stringify(slots[curSlot]));if(d.T)wristTwist={R:+d.T.R||0,L:+d.T.L||0};}}catch(e){}
+(function(){try{const d=JSON.parse(localStorage.getItem(SKEY));if(d&&Array.isArray(d.slots)&&d.slots.length===5){slots=d.slots;curSlot=Math.min(4,Math.max(0,d.cur|0));if(slots[curSlot])J=JSON.parse(JSON.stringify(slots[curSlot]));if(d.T)wristTwist={R:+d.T.R||0,L:+d.T.L||0};if(d.A)ankleTwist={R:+d.A.R||0,L:+d.A.L||0};}}catch(e){}
 if(!slots[curSlot])slots[curSlot]=JSON.parse(JSON.stringify(J));markSlot();})();
 addEventListener('pagehide',saveAll);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveAll();});
 document.getElementById('reset').onclick=()=>{const defJ=build(STAND,{x:100,y:190,z:0});if(JSON.stringify(J)!==JSON.stringify(defJ)){histU.push(snapPose());if(histU.length>50)histU.shift();histR=[];}J=defJ;slots[curSlot]=JSON.parse(JSON.stringify(J));saveAll();ACTIVE=null;updHist();
-  document.getElementById('msg').textContent='どちらの画面の関節（丸）もドラッグできるよ。上のプルダウンで視点を切り替えられる。';render();};
+  document.getElementById('msg').textContent=T('msgReset');render();};
 let histU=[],histR=[],lastTouch=null;
-function snapPose(){return JSON.stringify({J:J,T:wristTwist});}
+function snapPose(){return JSON.stringify({J:J,T:wristTwist,A:ankleTwist});}
 function updHist(){const u=document.getElementById('undo'),r=document.getElementById('redo'),l=document.getElementById('lastreset');if(u)u.disabled=!histU.length;if(r)r.disabled=!histR.length;if(l)l.disabled=!lastTouch;}
-document.getElementById('undo').onclick=()=>{if(!histU.length)return;histR.push(snapPose());const d=JSON.parse(histU.pop());J=d.J;wristTwist=d.T;updHist();savePose();render();};
-document.getElementById('redo').onclick=()=>{if(!histR.length)return;histU.push(snapPose());const d=JSON.parse(histR.pop());J=d.J;wristTwist=d.T;updHist();savePose();render();};
+document.getElementById('undo').onclick=()=>{if(!histU.length)return;histR.push(snapPose());const d=JSON.parse(histU.pop());J=d.J;wristTwist=d.T;ankleTwist=d.A||{R:0,L:0};updHist();savePose();render();};
+document.getElementById('redo').onclick=()=>{if(!histR.length)return;histU.push(snapPose());const d=JSON.parse(histR.pop());J=d.J;wristTwist=d.T;ankleTwist=d.A||{R:0,L:0};updHist();savePose();render();};
 document.getElementById('lastreset').onclick=()=>{if(!lastTouch)return;histU.push(snapPose());if(histU.length>50)histU.shift();histR=[];
  if(lastTouch==='hip'){J=build(STAND,{x:100,y:190,z:0});}
  else{const targets=[lastTouch,...DESC[lastTouch]];const th={};
@@ -213,7 +254,7 @@ document.getElementById('lastreset').onclick=()=>{if(!lastTouch)return;histU.pus
    if(n===lastTouch)a=(P[n]==='hip')?STAND[n]*Math.PI/180:curAng(P[n])+(STAND[n]-STAND[P[n]])*Math.PI/180;
    else a=th[P[n]]+(STAND[n]-STAND[P[n]])*Math.PI/180;
    th[n]=a;const p=J[P[n]];J[n]={x:p.x+L[n]*Math.cos(a),y:p.y+L[n]*Math.sin(a),z:J.hip.z+(LAT[n]||0)};}
-  if(lastTouch==='wristN')wristTwist.R=0;else if(lastTouch==='wristF')wristTwist.L=0;}
+  if(lastTouch==='wristN')wristTwist.R=0;else if(lastTouch==='wristF')wristTwist.L=0;else if(lastTouch==='ankleN')ankleTwist.R=0;else if(lastTouch==='ankleF')ankleTwist.L=0;}
  updHist();savePose();render();};
 updHist();
 render();
@@ -4109,7 +4150,17 @@ function grabPoseCanvas(done){
  const bg=(getComputedStyle(document.documentElement).getPropertyValue('--bg')||'#e9eef0').trim()||'#e9eef0';
  const finish=out=>{done(out)};
  if(M3D.ok&&M3D.panes.length===2){
+  M3D.hideGround=true;
+  const viewSave=[svgL,svgR].map(s=>({z:s._zoomV||1,pw:(s._panW||[0,0,0]).slice(),ob:(s._orbit||[0,0]).slice()}));
+  for(const s of [svgL,svgR]){s._zoomV=1;s._panW=[0,0,0];}
   render3D();
+  const fitF=p=>{let m=0;const v=new THREE.Vector3();
+   p.sk.root.traverse(o=>{if(!o.isBone)return;o.getWorldPosition(v);v.project(p.camera);
+    m=Math.max(m,Math.abs(v.x),Math.abs(v.y));});
+   return m>0.97?0.97/m:1;};
+  let needFit=false;
+  for(const p of M3D.panes){const s=(p.sel===selL?svgL:svgR),f=fitF(p);if(f<1){s._zoomV*=f;needFit=true;}}
+  if(needFit)render3D();
   const cL=M3D.panes[0].renderer.domElement,cR=M3D.panes[1].renderer.domElement;
   const pbox=(p,c)=>{let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const v=new THREE.Vector3();
    p.sk.root.traverse(o=>{if(!o.isBone)return;o.getWorldPosition(v);v.project(p.camera);
@@ -4128,6 +4179,9 @@ function grabPoseCanvas(done){
   if(bL&&bR){ctx.drawImage(cL,bL.x,bL.y,bL.w,bL.h,0,(out.height-bL.h)/2,bL.w,bL.h);
    ctx.drawImage(cR,bR.x,bR.y,bR.w,bR.h,bL.w,(out.height-bR.h)/2,bR.w,bR.h);}
   else{ctx.drawImage(cL,0,0);ctx.drawImage(cR,cL.width,0);}
+  [svgL,svgR].forEach((s,i)=>{s._zoomV=viewSave[i].z;s._panW=viewSave[i].pw;s._orbit=viewSave[i].ob;});
+  M3D.hideGround=false;
+  render();
   finish(out);return;
  }
  const wasRIG=RIG;RIG=false;render();
@@ -4148,7 +4202,7 @@ function grabPoseCanvas(done){
  let pending=2;
  for(const [i,id] of [[0,'svgL'],[1,'svgR']]){
   const cl=document.getElementById(id).cloneNode(true);
-  cl.setAttribute('xmlns','http://www.w3.org/2000/svg');cl.setAttribute('width',200*S);cl.setAttribute('height',300*S);
+  cl.setAttribute('xmlns','http://www.w3.org/2000/svg');cl.setAttribute('width',200*S);cl.setAttribute('height',300*S);cl.setAttribute('viewBox','0 20 200 300');
   const st=document.createElementNS('http://www.w3.org/2000/svg','style');st.textContent=':root{'+vars+'}';cl.insertBefore(st,cl.firstChild);
   const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(cl)],{type:'image/svg+xml;charset=utf-8'}));
   const im=new Image();
@@ -4238,6 +4292,14 @@ function poseFromJ(sk){
  sk.root.updateMatrixWorld(true);
  for(const tb of [[B.handR,'elbowN','wristN','R'],[B.handL,'elbowF','wristF','L']]){
   const bone=tb[0],tw=wristTwist[tb[3]];if(!tw||!bone)continue;
+  const axis=W3(J[tb[2]]).sub(W3(J[tb[1]])).normalize();
+  const pq=bone.parent.getWorldQuaternion(new THREE.Quaternion());
+  const q=new THREE.Quaternion().setFromAxisAngle(axis,tw);
+  const oldQ=bone.quaternion.clone();
+  bone.quaternion.copy(pq.clone().invert().multiply(q).multiply(pq).multiply(oldQ));
+ }
+ for(const tb of [[B.footR,'kneeN','ankleN','R'],[B.footL,'kneeF','ankleF','L']]){
+  const bone=tb[0],tw=ankleTwist[tb[3]];if(!tw||!bone)continue;
   const axis=W3(J[tb[2]]).sub(W3(J[tb[1]])).normalize();
   const pq=bone.parent.getWorldQuaternion(new THREE.Quaternion());
   const q=new THREE.Quaternion().setFromAxisAngle(axis,tw);
@@ -4370,6 +4432,15 @@ function setupPane(cv,sel,gltf){
  const camera=new THREE.OrthographicCamera(-1,1,1,-1,0.1,30);
  const pane={renderer,scene,camera,sk,sel,cv,ground,ring};
  M3D.panes.push(pane);return pane}
+function camDU(c,orb){
+ let dv=new THREE.Vector3(c.d[0],c.d[1],c.d[2]),uv=new THREE.Vector3(c.u[0],c.u[1],c.u[2]);
+ if(orb&&(orb[0]||orb[1])){
+  if(orb[0]){const q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),orb[0]);dv.applyQuaternion(q);uv.applyQuaternion(q);}
+  if(orb[1]){const r=new THREE.Vector3().crossVectors(uv,dv.clone().normalize()).normalize();
+   if(r.lengthSq()>0.001){const q=new THREE.Quaternion().setFromAxisAngle(r,orb[1]);dv.applyQuaternion(q);uv.applyQuaternion(q);}}
+ }
+ return [dv,uv];
+}
 function render3D(){
  for(const p of M3D.panes){
   const w=p.cv.clientWidth,h=p.cv.clientHeight;
@@ -4378,14 +4449,15 @@ function render3D(){
   if(sz.x!==w||sz.y!==h)p.renderer.setSize(w,h,false);
   poseFromJ(p.sk);
   const c=CAMS[p.sel.value]||CAMS.right,t0=c.t||[0,0.1,0],pw=(p.sel===selL?svgL:svgR)._panW||[0,0,0],t=[t0[0]+pw[0],t0[1]+pw[1],t0[2]+pw[2]];
-  p.camera.up.set(c.u[0],c.u[1],c.u[2]);
-  p.camera.position.set(t[0]+c.d[0],t[1]+c.d[1],t[2]+c.d[2]);
+  const du=camDU(c,(p.sel===selL?svgL:svgR)._orbit);
+  p.camera.up.set(du[1].x,du[1].y,du[1].z);
+  p.camera.position.set(t[0]+du[0].x,t[1]+du[0].y,t[2]+du[0].z);
   p.camera.lookAt(t[0],t[1],t[2]);
   const k=Math.min(w/200,h/300);let halfH=1.45,halfW=halfH*w/h;if(halfW<0.85){halfW=0.85;halfH=halfW*h/w;}
   const zm=(p.sel===selL?svgL:svgR)._zoomV||1;halfH/=zm;halfW/=zm;
   p.camera.left=-halfW;p.camera.right=halfW;p.camera.top=halfH;p.camera.bottom=-halfH;
   p.camera.updateProjectionMatrix();
-  const td=p.sel.value==='top';if(p.ground)p.ground.visible=!td;if(p.ring)p.ring.visible=!td;
+  const td=p.sel.value==='top'||M3D.hideGround;if(p.ground)p.ground.visible=!td;if(p.ring)p.ring.visible=!td;
   p.renderer.render(p.scene,p.camera);
   const B=p.sk.bones,X=p.ext||(p.ext={ht:findBoneM(p.sk.root,'HeadTop_End'),fN:findBoneM(p.sk.root,'RightHandMiddle4')||findBoneM(p.sk.root,'RightHandMiddle3'),fF:findBoneM(p.sk.root,'LeftHandMiddle4')||findBoneM(p.sk.root,'LeftHandMiddle3'),tN:findBoneM(p.sk.root,'RightToe_End'),tF:findBoneM(p.sk.root,'LeftToe_End')});
   const wv=new THREE.Vector3(),scr=v=>{const q=v.clone().project(p.camera);return{u:100+q.x*w/(2*k),v:170-q.y*h/(2*k)};},D={};
@@ -4397,7 +4469,7 @@ function render3D(){
   set('shN',B.armR);set('shF',B.armL);set('hpN',B.upLegR);set('hpF',B.upLegL);
   (p.sel===selL?svgL:svgR)._D=D;}}
 window.addEventListener('resize',()=>{if(M3D.ok)render3D()});
-document.getElementById('rigtoggle').onclick=function(){RIG=!RIG;ACTIVE=null;this.classList.toggle('on',RIG);document.getElementById('msg').textContent=RIG?'リグ表示中：関節の丸をドラッグして動かせるよ。':'リグ非表示：見えなくても、関節のあった場所をドラッグして動かせるよ。';render();};
+document.getElementById('rigtoggle').onclick=function(){RIG=!RIG;ACTIVE=null;this.classList.toggle('on',RIG);document.getElementById('msg').textContent=RIG?T('msgRigOn'):T('msgRigOff');render();};
 
 // ===== 保存ポーズのサムネイル＆描画スペース全画面 =====
 (function(){
@@ -4460,8 +4532,9 @@ document.getElementById('rigtoggle').onclick=function(){RIG=!RIG;ACTIVE=null;thi
    const c=CAMS[p.sel.value]||CAMS.right;
    let halfH=1.45,halfW=halfH*w/h;if(halfW<0.85){halfW=0.85;halfH=halfW*h/w;}
    const zm=zUse||svg._zoomV||1;halfH/=zm;halfW/=zm;
-   const vd=new THREE.Vector3(c.d[0],c.d[1],c.d[2]).normalize().negate();
-   const up=new THREE.Vector3(c.u[0],c.u[1],c.u[2]);
+   const du2=camDU(c,svg._orbit);
+   const vd=du2[0].clone().normalize().negate();
+   const up=du2[1];
    const r=new THREE.Vector3().crossVectors(vd,up).normalize();
    const tu=new THREE.Vector3().crossVectors(r,vd).normalize();
    const dl=r.multiplyScalar(-dx*2*halfW/w).add(tu.multiplyScalar(dy*2*halfH/h));
@@ -4474,20 +4547,25 @@ document.getElementById('rigtoggle').onclick=function(){RIG=!RIG;ACTIVE=null;thi
   }
  }
  for(const svg of [svgL,svgR]){
-  svg._zoomV=1;svg._panW=[0,0,0];svg._panU=0;svg._panV=0;
+  svg._zoomV=1;svg._panW=[0,0,0];svg._panU=0;svg._panV=0;svg._orbit=[0,0];
+  (svg===svgL?selL:selR).addEventListener('change',()=>{svg._orbit=[0,0];svg._panW=[0,0,0];svg._panU=0;svg._panV=0;applyZoom(svg);});
   const stage=svg.closest('.stage');if(!stage)continue;
   stage.addEventListener('mousedown',e=>{if(e.button===1)e.preventDefault();},true);
   let midDrag=null;
   stage.addEventListener('pointerdown',e=>{
    if(e.pointerType==='mouse'&&e.button===1){
     e.preventDefault();e.stopPropagation();
-    midDrag={x:e.clientX,y:e.clientY};
+    midDrag={x:e.clientX,y:e.clientY,pan:!!e.shiftKey};
    }
   },true);
   window.addEventListener('pointermove',e=>{
    if(!midDrag)return;
-   applyPan(svg,e.clientX-midDrag.x,e.clientY-midDrag.y);
-   midDrag={x:e.clientX,y:e.clientY};
+   const dx=e.clientX-midDrag.x,dy=e.clientY-midDrag.y;
+   if(midDrag.pan){applyPan(svg,dx,dy);}
+   else{svg._orbit=svg._orbit||[0,0];
+    svg._orbit[0]+=dx*-0.0075;
+    const np2=svg._orbit[1]+dy*-0.0075;svg._orbit[1]=Math.atan2(Math.sin(np2),Math.cos(np2));}
+   midDrag={x:e.clientX,y:e.clientY,pan:midDrag.pan};
    applyZoom(svg);
   },true);
   window.addEventListener('pointerup',e=>{if(e.button===1)midDrag=null;},true);
@@ -4496,7 +4574,7 @@ document.getElementById('rigtoggle').onclick=function(){RIG=!RIG;ACTIVE=null;thi
    svg._zoomV=clampZ((svg._zoomV||1)*Math.exp(-e.deltaY*0.0022));
    applyZoom(svg);
   },{passive:false});
-  const pts=new Map();let pinch=null,synth=false;
+  const pts=new Map();let pinch=null,synth=false,orbit=null;
   stage.addEventListener('pointerdown',e=>{
    if(e.pointerType==='mouse')return;
    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
@@ -4508,10 +4586,27 @@ document.getElementById('rigtoggle').onclick=function(){RIG=!RIG;ACTIVE=null;thi
     try{svg.dispatchEvent(new PointerEvent('pointerup',{pointerId:[...pts.keys()][0],bubbles:true}));}catch(err){}
     synth=false;
    }
+   if(pts.size===3){
+    e.stopPropagation();
+    pinch=null;
+    const a=[...pts.values()];
+    orbit={cx:(a[0].x+a[1].x+a[2].x)/3,cy:(a[0].y+a[1].y+a[2].y)/3};
+   }
   },true);
   stage.addEventListener('pointermove',e=>{
    if(!pts.has(e.pointerId))return;
    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+   if(orbit&&pts.size===3){
+    e.stopPropagation();
+    const a=[...pts.values()];
+    const cx=(a[0].x+a[1].x+a[2].x)/3,cy=(a[0].y+a[1].y+a[2].y)/3;
+    svg._orbit=svg._orbit||[0,0];
+    svg._orbit[0]+=(cx-orbit.cx)*-0.0075;
+    const np=svg._orbit[1]+(cy-orbit.cy)*-0.0075;svg._orbit[1]=Math.atan2(Math.sin(np),Math.cos(np));
+    orbit.cx=cx;orbit.cy=cy;
+    applyZoom(svg);
+    return;
+   }
    if(pinch&&pts.size===2){
     e.stopPropagation();
     const a=[...pts.values()];
@@ -4526,8 +4621,10 @@ document.getElementById('rigtoggle').onclick=function(){RIG=!RIG;ACTIVE=null;thi
   const endP=e=>{
    if(synth)return;
    if(!pts.has(e.pointerId))return;
-   if(pinch)e.stopPropagation();
+   if(pinch||orbit)e.stopPropagation();
    pts.delete(e.pointerId);
+   if(pts.size<3)orbit=null;
+   if(pts.size===2&&!pinch){const a=[...pts.values()];pinch={d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),z:svg._zoomV||1,cx:(a[0].x+a[1].x)/2,cy:(a[0].y+a[1].y)/2};}
    if(pts.size<2)pinch=null;
   };
   stage.addEventListener('pointerup',endP,true);
@@ -4553,5 +4650,83 @@ document.getElementById('rigtoggle').onclick=function(){RIG=!RIG;ACTIVE=null;thi
    if(++done===targets.length&&!failed){M3D.ok=true;document.body.classList.add('glon');render()}
   },()=>{failed=true})}
 })();
+
+// ===== IKモード（手首・指先・足首・つま先・頭をIKで動かす）=====
+let IKON=false;
+const ikBtn=document.getElementById('ikmode');
+const rotBtn2=document.getElementById('rotmode');
+if(rotBtn2&&rotBtn2.onclick){const origRot=rotBtn2.onclick;rotBtn2.onclick=e=>{if(IKON){IKON=false;if(ikBtn)ikBtn.classList.remove('on');}origRot(e);};}
+if(ikBtn)ikBtn.onclick=()=>{IKON=!IKON;ikBtn.classList.toggle('on',IKON);
+ if(IKON&&typeof rotMode!=='undefined'&&rotMode){rotMode=false;if(rotBtn2)rotBtn2.classList.remove('on');}
+ document.getElementById('msg').textContent=IKON?T('msgIkOn'):T('msgHome');render();};
+const IKC={wristN:{root:'shN',mid:'elbowN',end:'wristN'},wristF:{root:'shF',mid:'elbowF',end:'wristF'},
+ fingerN:{root:'shN',mid:'elbowN',end:'wristN',pull:'fingerN'},fingerF:{root:'shF',mid:'elbowF',end:'wristF',pull:'fingerF'},
+ ankleN:{root:'hip',mid:'kneeN',end:'ankleN'},ankleF:{root:'hip',mid:'kneeF',end:'ankleF'},
+ toeN:{root:'hip',mid:'kneeN',end:'ankleN',pull:'toeN'},toeF:{root:'hip',mid:'kneeF',end:'ankleF',pull:'toeF'},
+ toeTipN:{root:'hip',mid:'kneeN',end:'ankleN',pull:'toeTipN'},toeTipF:{root:'hip',mid:'kneeF',end:'ankleF',pull:'toeTipF'},
+ head:{root:'hip',mid:'chest',end:'head'}};
+const _v=(a,b)=>({x:a.x-b.x,y:a.y-b.y,z:a.z-b.z});
+const _len=v=>Math.hypot(v.x,v.y,v.z);
+const _nrm=v=>{const l=_len(v)||1;return{x:v.x/l,y:v.y/l,z:v.z/l};};
+function rotUV(list,pv,u,v){const ul=_len(u),vl=_len(v);if(ul<1e-9||vl<1e-9)return;
+ const un=_nrm(u),vn=_nrm(v);
+ let ax={x:un.y*vn.z-un.z*vn.y,y:un.z*vn.x-un.x*vn.z,z:un.x*vn.y-un.y*vn.x};
+ const al=_len(ax),dt=Math.max(-1,Math.min(1,un.x*vn.x+un.y*vn.y+un.z*vn.z));
+ if(al<1e-6){if(dt>0)return;
+  ax=Math.abs(un.y)<0.9?{x:un.z,y:0,z:-un.x}:{x:un.y,y:-un.x,z:0};ax=_nrm(ax);
+  for(const n of list){const w=_v(J[n],pv),d=ax.x*w.x+ax.y*w.y+ax.z*w.z;
+   J[n].x=pv.x+2*ax.x*d-w.x;J[n].y=pv.y+2*ax.y*d-w.y;J[n].z=pv.z+2*ax.z*d-w.z;}
+  return;}
+ ax={x:ax.x/al,y:ax.y/al,z:ax.z/al};
+ const ang=Math.acos(dt),cs=Math.cos(ang),si=Math.sin(ang);
+ for(const n of list){const w=_v(J[n],pv),d=ax.x*w.x+ax.y*w.y+ax.z*w.z,
+  c={x:ax.y*w.z-ax.z*w.y,y:ax.z*w.x-ax.x*w.z,z:ax.x*w.y-ax.y*w.x};
+  J[n].x=pv.x+w.x*cs+c.x*si+ax.x*d*(1-cs);J[n].y=pv.y+w.y*cs+c.y*si+ax.y*d*(1-cs);J[n].z=pv.z+w.z*cs+c.z*si+ax.z*d*(1-cs);}}
+function ikSolve(root,mid,end,T){
+ const R=J[root],M=J[mid],E=J[end];
+ const l1=_len(_v(M,R)),l2=_len(_v(E,M));if(l1<1e-6||l2<1e-6)return;
+ const d=_v(T,R);let dist=_len(d);if(dist<1e-9)return;
+ dist=Math.max(Math.abs(l1-l2)+0.01,Math.min(l1+l2-0.01,dist));
+ const dir=_nrm(d),Tc={x:R.x+dir.x*dist,y:R.y+dir.y*dist,z:R.z+dir.z*dist};
+ const cosA=Math.max(-1,Math.min(1,(l1*l1+dist*dist-l2*l2)/(2*l1*dist))),sinA=Math.sqrt(Math.max(0,1-cosA*cosA));
+ let perp=_v(M,R);const pd=perp.x*dir.x+perp.y*dir.y+perp.z*dir.z;
+ perp={x:perp.x-dir.x*pd,y:perp.y-dir.y*pd,z:perp.z-dir.z*pd};
+ if(_len(perp)<1e-4){perp={x:dir.y,y:dir.z,z:dir.x};const q=perp.x*dir.x+perp.y*dir.y+perp.z*dir.z;
+  perp={x:perp.x-dir.x*q,y:perp.y-dir.y*q,z:perp.z-dir.z*q};
+  if(_len(perp)<1e-4)perp={x:1,y:0,z:0};}
+ perp=_nrm(perp);
+ const Mnew={x:R.x+dir.x*l1*cosA+perp.x*l1*sinA,y:R.y+dir.y*l1*cosA+perp.y*l1*sinA,z:R.z+dir.z*l1*cosA+perp.z*l1*sinA};
+ rotUV(DESC[mid],R,_v(M,R),_v(Mnew,R));
+ rotUV(DESC[end],J[mid],_v(E,J[mid]),_v(Tc,J[mid]));
+}
+for(const pair of [[svgL,selL],[svgR,selR]]){
+ const svg=pair[0],sel=pair[1],stage=svg.closest('.stage');
+ if(!stage)continue;
+ let ikDrag=null;
+ const ptOf=e=>{const m=svg.getScreenCTM().inverse();return new DOMPoint(e.clientX,e.clientY).matrixTransform(m);};
+ stage.addEventListener('pointerdown',e=>{
+  ikDrag=null;if(!IKON)return;
+  const V=VIEWS[sel.value],p=ptOf(e),D=svg._D;let best=null,bd=26,bo=null;
+  for(const n of ['hip',...N]){const q=proj(V,J[n]),t=D&&D[n]?D[n]:q,dd=Math.hypot(p.x-t.u,p.y-t.v)+(MINOR[n]?7:0);
+   if(dd<bd){bd=dd;best=n;bo={x:q.u-t.u,y:q.v-t.v};}}
+  if(best&&IKC[best])ikDrag={joint:best,off:bo};
+ },true);
+ stage.addEventListener('pointermove',e=>{
+  if(!IKON||!ikDrag||ikDrag.joint!==ACTIVE)return;
+  const chain=IKC[ikDrag.joint];if(!chain)return;
+  e.stopPropagation();
+  const V=VIEWS[sel.value],p0=ptOf(e),p={x:p0.x+ikDrag.off.x,y:p0.y+ikDrag.off.y};
+  const vc=(V.v[0]===1?190:170),wE=proj(V,J[chain.end]).w;
+  const d3=inv(V,p.x-100,p.y-vc,wE);
+  let T={x:100+d3.x,y:190+d3.y,z:d3.z};
+  if(chain.pull){for(let it=0;it<3;it++){const A=J[chain.end],B=J[chain.pull],seg=_v(B,A),sl=_len(seg);
+   if(sl<1e-6)break;const sd=_nrm(seg);
+   ikSolve(chain.root,chain.mid,chain.end,{x:T.x-sd.x*sl,y:T.y-sd.y*sl,z:T.z-sd.z*sl});}}
+  else ikSolve(chain.root,chain.mid,chain.end,T);
+  render();
+ },true);
+ stage.addEventListener('pointerup',()=>{ikDrag=null;},true);
+ stage.addEventListener('pointercancel',()=>{ikDrag=null;},true);
+}
 </script></body>
 </html>
